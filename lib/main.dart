@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weather_x/bloc/weather_bloc.dart';
 import 'package:weather_x/screens/home_page.dart';
+import 'package:weather_x/screens/loading_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,36 +17,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+          fontFamily: 'Poppins',
+        ),
         home: FutureBuilder(
             future: _determinePosition(),
             builder: (context, snap) {
-              if(snap.hasData) {
+              if (snap.hasData) {
                 return BlocProvider<WeatherBloc>(
-                  create: (context) => WeatherBloc()..add(
-                      FetchWeather(snap.data as Position)
-                  ),
+                  create: (context) =>
+                      WeatherBloc()..add(FetchWeather(snap.data as Position)),
                   child: const HomePage(),
                 );
               } else {
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+                return const LoadingScreen();
               }
-            }
-        )
-    );
+            }));
   }
 }
-
-
 
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
